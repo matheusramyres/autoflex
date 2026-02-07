@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: autoflex-postgres
+    environment:
+      POSTGRES_DB: autoflex_db
+      POSTGRES_USER: autoflex_user
+      POSTGRES_PASSWORD: autoflex_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
