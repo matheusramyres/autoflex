@@ -1,6 +1,8 @@
 package com.autoflex.service;
 
 
+import com.autoflex.dto.ProductMaterialDTO;
+import com.autoflex.dto.ProductWithMaterialsDTO;
 import com.autoflex.dto.ProductionSuggestionDTO;
 import com.autoflex.entity.Product;
 import com.autoflex.entity.ProductRawMaterial;
@@ -66,4 +68,41 @@ public class ProductionService {
 		return result;
 
 	}
+
+	public List<ProductWithMaterialsDTO> listProductsWithMaterials() {
+
+        List<Product> products = Product.listAll();
+        List<ProductWithMaterialsDTO> result = new ArrayList<>();
+
+        for (Product product : products) {
+
+            List<ProductRawMaterial> relations =
+                ProductRawMaterial.list("product.id", product.id);
+
+            if (relations.isEmpty()) continue;
+
+            ProductWithMaterialsDTO dto = new ProductWithMaterialsDTO();
+            dto.id = product.id;
+            dto.name = product.name;
+            dto.price = product.price;
+
+            dto.rawMaterialQuantity = relations.stream()
+                .map(prm -> prm.requireQuantity)
+                .reduce(0, Integer::sum);
+
+            dto.materials = relations.stream().map(prm -> {
+                ProductMaterialDTO m = new ProductMaterialDTO();
+                m.id = prm.rawMaterial.id;
+                m.name = prm.rawMaterial.name;
+                m.requiredQty = prm.requireQuantity;
+                return m;
+            }).toList();
+
+            result.add(dto);
+        }
+
+        return result;
+    } 
+
+
 }

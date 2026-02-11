@@ -4,6 +4,7 @@ import com.autoflex.service.ProductionService;
 
 import java.util.List;
 
+import com.autoflex.dto.ProductWithMaterialsDTO;
 import com.autoflex.dto.ProductionSuggestionDTO;
 
 import jakarta.inject.Inject;
@@ -21,6 +22,12 @@ public class ProductionResource {
 	@Path("/suggestions")
 	public List<ProductionSuggestionDTO> getSuggestion(){
 		return productionService.calculateProduction();
+	}
+	
+	@GET
+	@Path("/product-with-materials")
+	public List<ProductWithMaterialsDTO> listWithMaterials(){
+		return productionService.listProductsWithMaterials();
 	}
 	
 }
