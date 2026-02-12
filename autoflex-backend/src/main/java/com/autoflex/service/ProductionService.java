@@ -10,6 +10,8 @@ import com.autoflex.entity.RawMaterial;
 
 import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Transactional;
+import jakarta.ws.rs.NotFoundException;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -79,8 +81,6 @@ public class ProductionService {
             List<ProductRawMaterial> relations =
                 ProductRawMaterial.list("product.id", product.id);
 
-            if (relations.isEmpty()) continue;
-
             ProductWithMaterialsDTO dto = new ProductWithMaterialsDTO();
             dto.id = product.id;
             dto.name = product.name;
@@ -92,7 +92,8 @@ public class ProductionService {
 
             dto.materials = relations.stream().map(prm -> {
                 ProductMaterialDTO m = new ProductMaterialDTO();
-                m.id = prm.rawMaterial.id;
+                m.productRawMaterialId = prm.id;
+                m.rawMaterialId = prm.rawMaterial.id;
                 m.name = prm.rawMaterial.name;
                 m.requiredQty = prm.requireQuantity;
                 return m;
@@ -104,5 +105,19 @@ public class ProductionService {
         return result;
     } 
 
+	
+	@Transactional
+    public void deleteProduct(Long productId) {
+
+        Product product = Product.findById(productId);
+
+        if (product == null) {
+            throw new NotFoundException("Product not found");
+        }
+
+        ProductRawMaterial.delete("product.id", productId);
+
+        product.delete();
+    }
 
 }
