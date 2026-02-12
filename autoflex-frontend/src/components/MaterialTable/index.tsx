@@ -6,56 +6,37 @@ import {
   type SortingState,
 } from '@tanstack/react-table';
 
-import type { Materials } from '../../types/ProductType';
-
 import { useState } from 'react';
 import { columns } from './columns';
-import type { Product } from '../../types/ProductType';
-import {
-  ChevronDown,
-  ChevronRight,
-  Edit2,
-  Plus,
-  Save,
-  Trash2,
-  X,
-} from 'lucide-react';
+import { Edit2, Plus, Save, Trash2, X } from 'lucide-react';
 import clsx from 'clsx';
-import { ModalAddMaterial } from './components/ModalAddMaterial';
 import { useDispatch } from 'react-redux';
 import type { AppDispatch } from '../../app/store';
 
 import {
-  createProduct,
-  updateProduct,
-  deleteProduct,
-  addMaterialToProduct,
-  removeMaterialFromProduct,
-} from '../../app/productsSlice';
+  createRawMaterial,
+  updateRawMaterial,
+  deleteRawMaterial,
+} from '../../app/rawMaterialSilce';
+import type { RawMaterial } from '../../types/rawMaterial';
 
-type ProductTableProps = {
-  data: Product[];
+type RawMaterialTableProps = {
+  data: RawMaterial[];
 };
 
-export const ProductTable = ({ data }: ProductTableProps) => {
+export const MaterialTable = ({ data }: RawMaterialTableProps) => {
   const dispatch = useDispatch<AppDispatch>();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [isAdding, setIsAdding] = useState(false);
-  const [idProduct, setIdProduct] = useState<number>(0);
 
-  const [openModal, setOpenModal] = useState(false);
-  const [expandedProduct, setExpandedProduct] = useState<
+  const [editingRawMaterial, setEditingRawMaterial] = useState<
     string | number | null
   >(null);
-  const [editingProduct, setEditingProduct] = useState<string | number | null>(
-    null,
-  );
-  const [editForm, setEditForm] = useState<Partial<Product>>({});
+  const [editForm, setEditForm] = useState<Partial<RawMaterial>>({});
 
-  const [addForm, setAddForm] = useState<Partial<Product>>({
+  const [addForm, setAddForm] = useState<Partial<RawMaterial>>({
     name: '',
-    price: 0,
-    materials: [],
+    stockQuantity: 0,
   });
 
   const table = useReactTable({
@@ -67,87 +48,58 @@ export const ProductTable = ({ data }: ProductTableProps) => {
     getSortedRowModel: getSortedRowModel(),
   });
 
-  const toggleExpand = (productId: number) => {
-    setExpandedProduct(expandedProduct === productId ? null : productId);
+  const startEdit = (material: RawMaterial) => {
+    setEditingRawMaterial(material.id);
+    setEditForm({ ...material });
   };
 
-  const startEdit = (product: Product) => {
-    setEditingProduct(product.id);
-    setEditForm({ ...product });
-  };
-
-  const handleDeleteProduct = (productId: number) => {
-    dispatch(deleteProduct(productId));
+  const handleDeleteMaterial = (rawMaterialId: number) => {
+    dispatch(deleteRawMaterial(rawMaterialId));
   };
 
   const cancelEdit = () => {
-    setEditingProduct(null);
+    setEditingRawMaterial(null);
     setEditForm({});
   };
 
   const saveEdit = () => {
-    if (editingProduct && editForm.name && editForm.price) {
+    if (editingRawMaterial && editForm.name && editForm.stockQuantity) {
       dispatch(
-        updateProduct({
-          id: Number(editingProduct),
+        updateRawMaterial({
+          id: Number(editingRawMaterial),
           payload: {
             name: editForm.name,
-            price: Number(editForm.price),
+            stockQuantity: Number(editForm.stockQuantity),
           },
         }),
       );
 
-      setEditingProduct(null);
+      setEditingRawMaterial(null);
       setEditForm({});
     }
   };
 
-  const addProduct = () => {
-    if (addForm.name && addForm.price) {
+  const addRawMaterial = () => {
+    if (addForm.name && addForm.stockQuantity) {
       dispatch(
-        createProduct({
+        createRawMaterial({
           name: addForm.name,
-          price: addForm.price,
+          stockQuantity: addForm.stockQuantity,
         }),
       );
 
       setIsAdding(false);
-      setAddForm({ name: '', price: 0, materials: [] });
+      setAddForm({ name: '', stockQuantity: 0 });
     }
-  };
-
-  const handleAddMaterial = (productId: number, material: Materials) => {
-    dispatch(
-      addMaterialToProduct({
-        productId,
-        rawMaterial: material.rawMaterialId,
-        requiredQuantity: material.requiredQty,
-      }),
-    );
-  };
-
-  const modalAddMaterialToProduct = (productId: number) => {
-    setIdProduct(productId);
-    setOpenModal(true);
-  };
-
-  const handleRemoveMaterial = (productRawMaterialId: number) => {
-    dispatch(removeMaterialFromProduct(productRawMaterialId));
   };
 
   return (
     <>
-      <ModalAddMaterial
-        openModal={openModal}
-        idProduct={idProduct}
-        addMaterialToProduct={handleAddMaterial}
-        setOpenModal={setOpenModal}
-      />
       <div className="flex items-center justify-between">
         <header className="w-full flex flex-col mb-6">
-          <h1 className="text-white text-[28px] font-bold">Produtos</h1>
+          <h1 className="text-white text-[28px] font-bold">Materiais</h1>
           <p className="text-[#B0B0B0] text-sm font-normal">
-            Gerencie seu catálogo de produtos e composições.
+            Gerencie seu estoque de matérias-primas
           </p>
         </header>
         <button
@@ -155,13 +107,13 @@ export const ProductTable = ({ data }: ProductTableProps) => {
           className="min-w-40 flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
         >
           <Plus size={20} />
-          Add Produto
+          Add Material
         </button>
       </div>
       {isAdding && (
         <div className="bg-gray-800 rounded-lg p-6 border border-blue-600">
           <h3 className="text-lg font-semibold text-white mb-4">
-            Novo Produto
+            Novo Material
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
@@ -173,20 +125,20 @@ export const ProductTable = ({ data }: ProductTableProps) => {
                   setAddForm({ ...addForm, name: e.target.value })
                 }
                 className="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:border-blue-600 focus:outline-none"
-                placeholder="Insira o nome do produto"
+                placeholder="Insira o nome do material"
               />
             </div>
             <div>
               <label className="block text-gray-400 text-sm mb-2">
-                Preço (R$)
+                Estoque
               </label>
               <input
                 type="number"
-                value={addForm.price}
+                value={addForm.stockQuantity}
                 onChange={(e) =>
                   setAddForm({
                     ...addForm,
-                    price: parseFloat(e.target.value),
+                    stockQuantity: parseInt(e.target.value),
                   })
                 }
                 className="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:border-blue-600 focus:outline-none"
@@ -196,7 +148,7 @@ export const ProductTable = ({ data }: ProductTableProps) => {
           </div>
           <div className="flex gap-2">
             <button
-              onClick={addProduct}
+              onClick={addRawMaterial}
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
               Salvar
@@ -204,7 +156,7 @@ export const ProductTable = ({ data }: ProductTableProps) => {
             <button
               onClick={() => {
                 setIsAdding(false);
-                setAddForm({ name: '', price: 0, materials: [] });
+                setAddForm({ name: '', stockQuantity: 0 });
               }}
               className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors"
             >
@@ -219,7 +171,6 @@ export const ProductTable = ({ data }: ProductTableProps) => {
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
-                <th className="bg-[#172030] p-4 text-[#B0B0B0] text-sm text-left font-normal cursor-pointer"></th>
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
@@ -243,18 +194,6 @@ export const ProductTable = ({ data }: ProductTableProps) => {
             {table.getRowModel().rows.map((row) => (
               <>
                 <tr key={row.id}>
-                  <td className="p-2 border-t border-[#2D3849]">
-                    <button
-                      onClick={() => toggleExpand(row.original.id)}
-                      className="text-gray-400 hover:text-white transition-colors"
-                    >
-                      {expandedProduct === row.original.id ? (
-                        <ChevronDown size={20} />
-                      ) : (
-                        <ChevronRight size={20} />
-                      )}
-                    </button>
-                  </td>
                   {row.getVisibleCells().map((cell) => (
                     <td
                       key={cell.id}
@@ -263,20 +202,20 @@ export const ProductTable = ({ data }: ProductTableProps) => {
                         'p-4 text-sm font-semibold',
                       )}
                     >
-                      {editingProduct === row.original.id &&
+                      {editingRawMaterial === row.original.id &&
                       (cell.id.includes('name') ||
-                        cell.id.includes('price')) ? (
+                        cell.id.includes('stockQuantity')) ? (
                         <input
                           type="text"
                           value={
                             cell.id.includes('name')
                               ? editForm.name
-                              : editForm.price
+                              : editForm.stockQuantity
                           }
                           onChange={(e) => {
                             const label = cell.id.includes('name')
                               ? 'name'
-                              : 'price';
+                              : 'stockQuantity';
                             setEditForm({
                               ...editForm,
                               [label]: e.target.value,
@@ -300,7 +239,7 @@ export const ProductTable = ({ data }: ProductTableProps) => {
 
                       {cell.id.includes('actions') && (
                         <div className="flex items-center justify-end gap-2">
-                          {editingProduct === row.original.id ? (
+                          {editingRawMaterial === row.original.id ? (
                             <>
                               <button
                                 onClick={saveEdit}
@@ -328,7 +267,7 @@ export const ProductTable = ({ data }: ProductTableProps) => {
                               </button>
                               <button
                                 onClick={() =>
-                                  handleDeleteProduct(row.original.id)
+                                  handleDeleteMaterial(row.original.id)
                                 }
                                 className="p-2 text-red-400 hover:bg-gray-700 rounded transition-colors"
                                 title="Delete"
@@ -341,81 +280,6 @@ export const ProductTable = ({ data }: ProductTableProps) => {
                       )}
                     </td>
                   ))}
-                </tr>
-                <tr>
-                  <td colSpan={5}>
-                    {expandedProduct === row.original.id && (
-                      <div className="space-y-4 px-11.25 pb-6 pt-4.5 bg-[#172030]">
-                        <div className="flex items-center justify-between">
-                          <h4 className="text-lg font-semibold text-white">
-                            Materiais de Composição
-                          </h4>
-                          <button
-                            onClick={() =>
-                              modalAddMaterialToProduct(row.original.id)
-                            }
-                            className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
-                          >
-                            <Plus size={16} />
-                            Add Material
-                          </button>
-                        </div>
-                        {row.original.materials.length > 0 ? (
-                          <div className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
-                            <table className="w-full">
-                              <thead>
-                                <tr className="bg-gray-900/50">
-                                  <th className="text-left p-3 text-gray-400 text-sm">
-                                    Material Name
-                                  </th>
-                                  <th className="text-right p-3 text-gray-400 text-sm">
-                                    Required Qty
-                                  </th>
-                                  <th className="text-right p-3 text-gray-400 text-sm">
-                                    Actions
-                                  </th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                {row.original.materials.map((material) => (
-                                  <tr
-                                    key={material.rawMaterialId}
-                                    className="border-t border-gray-700"
-                                  >
-                                    <td className="p-3 text-white">
-                                      {material.name}
-                                    </td>
-                                    <td className="p-3 text-right text-white">
-                                      {material.requiredQty}
-                                    </td>
-                                    <td className="p-3">
-                                      <div className="flex items-center justify-end">
-                                        <button
-                                          onClick={() =>
-                                            handleRemoveMaterial(
-                                              material.productRawMaterialId,
-                                            )
-                                          }
-                                          className="p-1.5 text-red-400 hover:bg-gray-700 rounded transition-colors"
-                                          title="Delete"
-                                        >
-                                          <Trash2 size={16} />
-                                        </button>
-                                      </div>
-                                    </td>
-                                  </tr>
-                                ))}
-                              </tbody>
-                            </table>
-                          </div>
-                        ) : (
-                          <p className="text-gray-500 text-center py-4">
-                            Nenhum material adicionado
-                          </p>
-                        )}
-                      </div>
-                    )}
-                  </td>
                 </tr>
               </>
             ))}

@@ -40,7 +40,6 @@ export const updateProduct = createAsyncThunk(
 export const deleteProduct = createAsyncThunk(
   'products/delete',
   async (id: number, { dispatch }) => {
-    console.log('================');
     await productService.deleteProduct(id);
     dispatch(fetchProducts());
   },
