@@ -1,0 +1,71 @@
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import type { RawMaterial } from '../types/rawMaterial';
+import { rawMaterialService } from '../services/rawMaterialService';
+
+interface RawMaterialState {
+  items: RawMaterial[];
+  loading: boolean;
+  error: string | null;
+}
+
+const initialState: RawMaterialState = {
+  items: [],
+  loading: false,
+  error: null,
+};
+
+export const fetchRawMaterials = createAsyncThunk(
+  'rawMaterials/fetch',
+  async () => {
+    return await rawMaterialService.getAll();
+  },
+);
+
+export const createRawMaterial = createAsyncThunk(
+  'rawMaterials/create',
+  async (payload: { name: string; stockQuantity: number }, { dispatch }) => {
+    await rawMaterialService.create(payload);
+    dispatch(fetchRawMaterials());
+  },
+);
+
+export const updateRawMaterial = createAsyncThunk(
+  'rawMaterials/update',
+  async (
+    args: { id: number; payload: { name: string; stockQuantity: number } },
+    { dispatch },
+  ) => {
+    await rawMaterialService.update(args.id, args.payload);
+    dispatch(fetchRawMaterials());
+  },
+);
+
+export const deleteRawMaterial = createAsyncThunk(
+  'rawMaterials/delete',
+  async (id: number, { dispatch }) => {
+    await rawMaterialService.delete(id);
+    dispatch(fetchRawMaterials());
+  },
+);
+
+const rawMaterialSlice = createSlice({
+  name: 'rawMaterials',
+  initialState,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchRawMaterials.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchRawMaterials.fulfilled, (state, action) => {
+        state.items = action.payload;
+        state.loading = false;
+      })
+      .addCase(fetchRawMaterials.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message ?? null;
+      });
+  },
+});
+
+export default rawMaterialSlice.reducer;

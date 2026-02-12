@@ -19,7 +19,6 @@ export const productService = {
   },
 
   deleteProduct: async (id: number) => {
-    console.log('============', id);
     await api.delete(`/products/${id}`);
   },
 
@@ -32,7 +31,6 @@ export const productService = {
   },
 
   removeMaterialFromProduct: async (productRawMaterialId: number) => {
-    console.log('============', productRawMaterialId);
     await api.delete(`/product-raw-material/product/${productRawMaterialId}`);
   },
 
