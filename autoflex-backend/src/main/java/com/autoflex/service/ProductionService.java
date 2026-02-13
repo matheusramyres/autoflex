@@ -12,6 +12,7 @@ import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.WebApplicationException;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -114,10 +115,18 @@ public class ProductionService {
         if (product == null) {
             throw new NotFoundException("Product not found");
         }
-
-        ProductRawMaterial.delete("product.id", productId);
-
-        product.delete();
+        
+        try {
+        	
+        	ProductRawMaterial.delete("product.id", productId);        	
+        	product.delete();
+			
+		} catch (Exception e) {
+			throw new WebApplicationException(
+		            "Unable to delete product",
+		            409
+		        );
+		}
     }
 
 }

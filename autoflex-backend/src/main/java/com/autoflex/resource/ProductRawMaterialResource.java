@@ -10,6 +10,7 @@ import com.autoflex.entity.RawMaterial;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 @Path("/product-raw-material")
 @Produces(MediaType.APPLICATION_JSON)
@@ -47,7 +48,15 @@ public class ProductRawMaterialResource {
 	@DELETE
 	@Path("/product/{id}")
 	@Transactional
-	public void delete (@PathParam("id") Long id) {
-		ProductRawMaterial.deleteById(id);
+	public Response delete (@PathParam("id") Long id) {
+		try {
+			ProductRawMaterial.deleteById(id);			
+		}catch(Exception ex) {
+			throw new WebApplicationException(
+		            "Unable to delete product",
+		            409
+		        );
+		}
+		return Response.noContent().build();
 	}
 }
