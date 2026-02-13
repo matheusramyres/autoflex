@@ -1,5 +1,7 @@
-import { api } from './api';
+import { toast } from 'sonner';
+import { type StatusCode, messages } from '../types/MessageResponses';
 import type { Product } from '../types/ProductType';
+import { api } from './api';
 
 export const productService = {
   getProductsWithMaterials: async (): Promise<Product[]> => {
@@ -19,7 +21,11 @@ export const productService = {
   },
 
   deleteProduct: async (id: number) => {
-    await api.delete(`/products/${id}`);
+    await api.delete(`/products/${id}`).then((response) => {
+      const status = response.status as StatusCode;
+      const msg = messages[status];
+      toast.success(msg);
+    });
   },
 
   addMaterialToProduct: async (payload: {
@@ -31,7 +37,13 @@ export const productService = {
   },
 
   removeMaterialFromProduct: async (productRawMaterialId: number) => {
-    await api.delete(`/product-raw-material/product/${productRawMaterialId}`);
+    await api
+      .delete(`/product-raw-material/product/${productRawMaterialId}`)
+      .then((response) => {
+        const status = response.status as StatusCode;
+        const msg = messages[status];
+        toast.success(msg);
+      });
   },
 
   getProductMaterials: async (productId: number) => {
