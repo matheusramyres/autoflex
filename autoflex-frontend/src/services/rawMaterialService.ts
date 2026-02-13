@@ -1,5 +1,5 @@
+import type { RawMaterialPayload } from '../types/RawMaterial';
 import { api } from './api';
-import type { RawMaterialPayload } from '../types/rawMaterial';
 
 export const rawMaterialService = {
   getAll: async () => {

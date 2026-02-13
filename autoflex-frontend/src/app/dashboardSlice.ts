@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { fetchDashboardSummary } from '../services/dashboardService';
-import type { DashboardSummary } from '../types/dashboard';
+import type { DashboardSummary } from '../types/Dashboard';
 
 interface DashboardState {
   summary: DashboardSummary | null;

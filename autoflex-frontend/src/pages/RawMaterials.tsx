@@ -1,8 +1,8 @@
-import { MaterialTable } from '../components/MaterialTable';
 import { useEffect } from 'react';
-import { fetchRawMaterials } from '../app/rawMaterialSilce';
 import { useDispatch, useSelector } from 'react-redux';
+import { fetchRawMaterials } from '../app/rawMaterialSilce';
 import type { AppDispatch, RootState } from '../app/store';
+import { MaterialTable } from '../components/MaterialTable';
 
 export const RawMaterials = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -16,7 +16,7 @@ export const RawMaterials = () => {
   return (
     <>
       <section>
-        {items && items.length && <MaterialTable data={items} />}
+        <MaterialTable data={items} loading={loading} />
       </section>
     </>
   );

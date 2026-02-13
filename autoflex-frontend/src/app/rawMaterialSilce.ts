@@ -1,6 +1,6 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import type { RawMaterial } from '../types/rawMaterial';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { rawMaterialService } from '../services/rawMaterialService';
+import type { RawMaterial } from '../types/RawMaterial';
 
 interface RawMaterialState {
   items: RawMaterial[];

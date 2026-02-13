@@ -1,8 +1,8 @@
-import { ProductTable } from '../components/ProductTable';
 import { useEffect } from 'react';
-import { fetchProducts } from '../app/productsSlice';
 import { useDispatch, useSelector } from 'react-redux';
+import { fetchProducts } from '../app/productsSlice';
 import type { AppDispatch, RootState } from '../app/store';
+import { ProductTable } from '../components/ProductTable';
 
 export const Products = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -11,10 +11,11 @@ export const Products = () => {
   useEffect(() => {
     dispatch(fetchProducts());
   }, [dispatch]);
+
   return (
     <>
       <section>
-        {items && items.length && <ProductTable data={items} />}
+        <ProductTable data={items} loading={loading} />
       </section>
     </>
   );

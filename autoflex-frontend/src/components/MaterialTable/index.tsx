@@ -1,33 +1,42 @@
 import {
-  useReactTable,
-  getCoreRowModel,
-  getSortedRowModel,
   flexRender,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
   type SortingState,
 } from '@tanstack/react-table';
 
-import { useState } from 'react';
-import { columns } from './columns';
-import { Edit2, Plus, Save, Trash2, X } from 'lucide-react';
 import clsx from 'clsx';
+import { Edit2, Plus, Save, Trash2, X } from 'lucide-react';
+import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import type { AppDispatch } from '../../app/store';
+import { columns } from './columns';
 
 import {
   createRawMaterial,
-  updateRawMaterial,
   deleteRawMaterial,
+  updateRawMaterial,
 } from '../../app/rawMaterialSilce';
-import type { RawMaterial } from '../../types/rawMaterial';
+import { SkeletonRow } from '../../skeleton/SkeletonRow/SkeletonRow';
+import type { RawMaterial } from '../../types/RawMaterial';
+import { PaginationController } from '../PaginationController/PaginationController';
 
 type RawMaterialTableProps = {
   data: RawMaterial[];
+  loading: boolean;
 };
 
-export const MaterialTable = ({ data }: RawMaterialTableProps) => {
+export const MaterialTable = ({ data, loading }: RawMaterialTableProps) => {
   const dispatch = useDispatch<AppDispatch>();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [isAdding, setIsAdding] = useState(false);
+
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 5,
+  });
 
   const [editingRawMaterial, setEditingRawMaterial] = useState<
     string | number | null
@@ -42,10 +51,12 @@ export const MaterialTable = ({ data }: RawMaterialTableProps) => {
   const table = useReactTable({
     data,
     columns,
-    state: { sorting },
+    state: { sorting, pagination },
     onSortingChange: setSorting,
+    onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
   });
 
   const startEdit = (material: RawMaterial) => {
@@ -104,7 +115,11 @@ export const MaterialTable = ({ data }: RawMaterialTableProps) => {
         </header>
         <button
           onClick={() => setIsAdding(true)}
-          className="min-w-40 flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          className={clsx(
+            'min-w-40 flex items-center gap-2',
+            'px-4 py-2 bg-blue-600 text-white',
+            'rounded-lg hover:bg-blue-700 transition-colors',
+          )}
         >
           <Plus size={20} />
           Add Material
@@ -124,7 +139,10 @@ export const MaterialTable = ({ data }: RawMaterialTableProps) => {
                 onChange={(e) =>
                   setAddForm({ ...addForm, name: e.target.value })
                 }
-                className="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:border-blue-600 focus:outline-none"
+                className={clsx(
+                  'w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg',
+                  'text-white focus:border-blue-600 focus:outline-none',
+                )}
                 placeholder="Insira o nome do material"
               />
             </div>
@@ -141,7 +159,10 @@ export const MaterialTable = ({ data }: RawMaterialTableProps) => {
                     stockQuantity: parseInt(e.target.value),
                   })
                 }
-                className="w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:border-blue-600 focus:outline-none"
+                className={clsx(
+                  'w-full px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg',
+                  'text-white focus:border-blue-600 focus:outline-none',
+                )}
                 placeholder="0.00"
               />
             </div>
@@ -149,7 +170,10 @@ export const MaterialTable = ({ data }: RawMaterialTableProps) => {
           <div className="flex gap-2">
             <button
               onClick={addRawMaterial}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className={clsx(
+                'px-4 py-2 bg-blue-600 text-white rounded-lg',
+                'hover:bg-blue-700 transition-colors',
+              )}
             >
               Salvar
             </button>
@@ -158,7 +182,10 @@ export const MaterialTable = ({ data }: RawMaterialTableProps) => {
                 setIsAdding(false);
                 setAddForm({ name: '', stockQuantity: 0 });
               }}
-              className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors"
+              className={clsx(
+                'px-4 py-2 bg-gray-700 text-white rounded-lg',
+                'hover:bg-gray-600 transition-colors',
+              )}
             >
               Cancelar
             </button>
@@ -174,7 +201,11 @@ export const MaterialTable = ({ data }: RawMaterialTableProps) => {
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
-                    className="bg-[#172030] p-4 text-[#B0B0B0] text-sm text-left font-normal cursor-pointer"
+                    className={clsx(
+                      'bg-[#172030] p-4 cursor-pointer',
+                      'text-[#B0B0B0] text-sm text-left font-normal',
+                      header.id === 'actions' ? 'flex justify-end' : '',
+                    )}
                   >
                     {flexRender(
                       header.column.columnDef.header,
@@ -191,101 +222,114 @@ export const MaterialTable = ({ data }: RawMaterialTableProps) => {
           </thead>
 
           <tbody>
-            {table.getRowModel().rows.map((row) => (
-              <>
-                <tr key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <td
-                      key={cell.id}
-                      className={clsx(
-                        'border-t border-[#2D3849]',
-                        'p-4 text-sm font-semibold',
-                      )}
-                    >
-                      {editingRawMaterial === row.original.id &&
-                      (cell.id.includes('name') ||
-                        cell.id.includes('stockQuantity')) ? (
-                        <input
-                          type="text"
-                          value={
-                            cell.id.includes('name')
-                              ? editForm.name
-                              : editForm.stockQuantity
-                          }
-                          onChange={(e) => {
-                            const label = cell.id.includes('name')
-                              ? 'name'
-                              : 'stockQuantity';
-                            setEditForm({
-                              ...editForm,
-                              [label]: e.target.value,
-                            });
-                          }}
-                          className="w-full px-3 py-1 bg-gray-900 border border-gray-700 rounded text-white focus:border-blue-600 focus:outline-none"
-                        />
-                      ) : (
-                        <p
-                          className={clsx(
-                            cell.id.includes('rawMaterialQuantity') &&
-                              'flex justify-center items-center p-2 w-8 h-6.75 rounded-2xl text-[#3EA2FF] bg-[#1C3460]',
-                          )}
-                        >
-                          {flexRender(
+            {loading ? (
+              <SkeletonRow />
+            ) : (
+              table.getRowModel().rows.map((row) => (
+                <>
+                  <tr key={row.id}>
+                    {row.getVisibleCells().map((cell) => (
+                      <td
+                        key={cell.id}
+                        className={clsx(
+                          'border-t border-[#2D3849]',
+                          'p-4 text-sm font-semibold',
+                        )}
+                      >
+                        {editingRawMaterial === row.original.id &&
+                        (cell.id.includes('name') ||
+                          cell.id.includes('stockQuantity')) ? (
+                          <input
+                            type="text"
+                            value={
+                              cell.id.includes('name')
+                                ? editForm.name
+                                : editForm.stockQuantity
+                            }
+                            onChange={(e) => {
+                              const label = cell.id.includes('name')
+                                ? 'name'
+                                : 'stockQuantity';
+                              setEditForm({
+                                ...editForm,
+                                [label]: e.target.value,
+                              });
+                            }}
+                            className={clsx(
+                              'w-full px-3 py-1 bg-gray-900 border border-gray-700 rounded',
+                              'text-white focus:border-blue-600 focus:outline-none',
+                            )}
+                          />
+                        ) : (
+                          flexRender(
                             cell.column.columnDef.cell,
                             cell.getContext(),
-                          )}
-                        </p>
-                      )}
+                          )
+                        )}
 
-                      {cell.id.includes('actions') && (
-                        <div className="flex items-center justify-end gap-2">
-                          {editingRawMaterial === row.original.id ? (
-                            <>
-                              <button
-                                onClick={saveEdit}
-                                className="p-2 text-green-400 hover:bg-gray-700 rounded transition-colors"
-                                title="Save"
-                              >
-                                <Save size={18} />
-                              </button>
-                              <button
-                                onClick={cancelEdit}
-                                className="p-2 text-gray-400 hover:bg-gray-700 rounded transition-colors"
-                                title="Cancel"
-                              >
-                                <X size={18} />
-                              </button>
-                            </>
-                          ) : (
-                            <>
-                              <button
-                                onClick={() => startEdit(row.original)}
-                                className="p-2 text-blue-400 hover:bg-gray-700 rounded transition-colors"
-                                title="Edit"
-                              >
-                                <Edit2 size={18} />
-                              </button>
-                              <button
-                                onClick={() =>
-                                  handleDeleteMaterial(row.original.id)
-                                }
-                                className="p-2 text-red-400 hover:bg-gray-700 rounded transition-colors"
-                                title="Delete"
-                              >
-                                <Trash2 size={18} />
-                              </button>
-                            </>
-                          )}
-                        </div>
-                      )}
-                    </td>
-                  ))}
-                </tr>
-              </>
-            ))}
+                        {cell.id.includes('actions') && (
+                          <div className="flex items-center justify-end gap-2">
+                            {editingRawMaterial === row.original.id ? (
+                              <>
+                                <button
+                                  onClick={saveEdit}
+                                  className={clsx(
+                                    'p-2 text-green-400 hover:bg-gray-700',
+                                    'rounded transition-colors',
+                                  )}
+                                  title="Save"
+                                >
+                                  <Save size={18} />
+                                </button>
+                                <button
+                                  onClick={cancelEdit}
+                                  className={clsx(
+                                    'p-2 text-gray-400 hover:bg-gray-700',
+                                    'rounded transition-colors',
+                                  )}
+                                  title="Cancel"
+                                >
+                                  <X size={18} />
+                                </button>
+                              </>
+                            ) : (
+                              <>
+                                <button
+                                  onClick={() => startEdit(row.original)}
+                                  className={clsx(
+                                    'p-2 text-blue-400 hover:bg-gray-700',
+                                    'rounded transition-colors',
+                                  )}
+                                  title="Edit"
+                                >
+                                  <Edit2 size={18} />
+                                </button>
+                                <button
+                                  onClick={() =>
+                                    handleDeleteMaterial(row.original.id)
+                                  }
+                                  className={clsx(
+                                    'p-2 text-red-400 hover:bg-gray-700',
+                                    'rounded transition-colors',
+                                  )}
+                                  title="Delete"
+                                >
+                                  <Trash2 size={18} />
+                                </button>
+                              </>
+                            )}
+                          </div>
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                </>
+              ))
+            )}
           </tbody>
         </table>
       </div>
+      {!loading && <PaginationController table={table} />}
     </>
   );
 };

@@ -1,20 +1,22 @@
 import {
-  useReactTable,
+  flexRender,
   getCoreRowModel,
   getSortedRowModel,
-  flexRender,
+  useReactTable,
   type SortingState,
 } from '@tanstack/react-table';
-import { useState } from 'react';
-import { columns } from './columns';
-import type { ProductionSuggestion } from '../../types/production';
 import { clsx } from 'clsx';
+import { useState } from 'react';
+import { SkeletonRow } from '../../skeleton/SkeletonRow/SkeletonRow';
+import type { ProductionSuggestion } from '../../types/production';
+import { columns } from './columns';
 
 type ProductionProps = {
   data: ProductionSuggestion[];
+  loading: boolean;
 };
 
-export function ProductionSuggestionTable({ data }: ProductionProps) {
+export function ProductionSuggestionTable({ data, loading }: ProductionProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
 
   const table = useReactTable({
@@ -44,7 +46,10 @@ export function ProductionSuggestionTable({ data }: ProductionProps) {
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className="bg-[#172030] p-2 text-[#B0B0B0] text-sm text-left font-normal cursor-pointer"
+                  className={clsx(
+                    'bg-[#172030] p-2 cursor-pointer',
+                    'text-[#B0B0B0] text-sm text-left font-normal',
+                  )}
                   onClick={header.column.getToggleSortingHandler()}
                 >
                   {flexRender(
@@ -62,22 +67,30 @@ export function ProductionSuggestionTable({ data }: ProductionProps) {
         </thead>
 
         <tbody>
-          {table.getRowModel().rows.map((row) => (
-            <tr key={row.id}>
-              {row.getVisibleCells().map((cell) => (
-                <td
-                  key={cell.id}
-                  className={clsx(
-                    'border-t border-[#2D3849]',
-                    'p-4 text-sm font-semibold',
-                    cell.id.includes('totalValue') ? 'text-[#47A2F9]' : '',
-                  )}
-                >
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
+          {loading ? (
+            <>
+              {Array.from({ length: 6 }).map((_, i) => (
+                <SkeletonRow key={i} />
               ))}
-            </tr>
-          ))}
+            </>
+          ) : (
+            table.getRowModel().rows.map((row) => (
+              <tr key={row.id}>
+                {row.getVisibleCells().map((cell) => (
+                  <td
+                    key={cell.id}
+                    className={clsx(
+                      'border-t border-[#2D3849]',
+                      'p-4 text-sm font-semibold',
+                      cell.id.includes('totalValue') ? 'text-[#47A2F9]' : '',
+                    )}
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
     </div>

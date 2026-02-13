@@ -1,10 +1,11 @@
-import { CardData } from '../components/CardData';
-import { ProductionSuggestionTable } from '../components/SuggestionTable';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import type { AppDispatch, RootState } from '../app/store';
 import { loadDashboard } from '../app/dashboardSlice';
 import { loadProduction } from '../app/productionSlice';
+import type { AppDispatch, RootState } from '../app/store';
+import { CardData } from '../components/CardData';
+import { ProductionSuggestionTable } from '../components/SuggestionTable';
+import { CardDataSkeleton } from '../skeleton/CardSkeleton/CardSkeleton';
 
 export const Dashboard = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -14,10 +15,12 @@ export const Dashboard = () => {
     dispatch(loadProduction());
   }, [dispatch]);
 
-  const { loading, summary } = useSelector(
+  const { summary, loading: loadingSummary } = useSelector(
     (state: RootState) => state.dashboard,
   );
-  const { result } = useSelector((state: RootState) => state.production);
+  const { result, loading: loadingResult } = useSelector(
+    (state: RootState) => state.production,
+  );
 
   const suggestions = result?.length ? result : [];
 
@@ -30,14 +33,34 @@ export const Dashboard = () => {
         </p>
       </header>
       <section className="flex justify-between gap-6">
-        <CardData variant="money" value={summary?.totalProductionValue} />
-        <CardData variant="product" value={summary?.activeProducts} />
-        <CardData variant="material" value={summary?.materialUtilization} />
+        {loadingSummary ? (
+          <>
+            <CardDataSkeleton />
+            <CardDataSkeleton />
+            <CardDataSkeleton />
+          </>
+        ) : (
+          <>
+            <CardData
+              variant="money"
+              value={summary?.totalProductionValue}
+              variation={summary?.variation.productionValue}
+            />
+            <CardData
+              variant="product"
+              value={summary?.activeProducts}
+              variation={summary?.variation.activeProducts}
+            />
+            <CardData
+              variant="material"
+              value={summary?.materialUtilization}
+              variation={summary?.variation.materialUtilization}
+            />
+          </>
+        )}
       </section>
       <section>
-        {suggestions && suggestions.length && (
-          <ProductionSuggestionTable data={suggestions} />
-        )}
+        <ProductionSuggestionTable data={suggestions} loading={loadingResult} />
       </section>
     </>
   );

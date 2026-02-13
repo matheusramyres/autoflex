@@ -1,13 +1,20 @@
 import { clsx } from 'clsx';
-import { DollarSign, TrendingUp, Box, Activity } from 'lucide-react';
+import {
+  Activity,
+  Box,
+  DollarSign,
+  TrendingDown,
+  TrendingUp,
+} from 'lucide-react';
 import { moneyFormatter } from '../../utils/formatters';
 
 interface CardProps {
   variant: 'money' | 'material' | 'product';
+  variation: number | undefined;
   value: number | undefined;
 }
 
-export const CardData = ({ value, variant }: CardProps) => {
+export const CardData = ({ value, variant, variation }: CardProps) => {
   return (
     <article className={clsx(' w-full px-6 py-4.5', 'bg-[#1E2939] rounded-xl')}>
       <div className="flex justify-between items-center mb-4.5">
@@ -20,9 +27,14 @@ export const CardData = ({ value, variant }: CardProps) => {
             <Activity size={24} color="#50A2FF" />
           )}
         </div>
-        <div className="flex justify-center text-[#05DF72]">
-          <TrendingUp />
-          <span className="ml-1.5">+12.5%</span>
+        <div
+          className={clsx(
+            'flex justify-center',
+            variation && variation > 0 ? 'text-[#05DF72]' : 'text-[#df2d05]',
+          )}
+        >
+          {variation && variation > 0 ? <TrendingUp /> : <TrendingDown />}
+          <span className="ml-1.5">{`${variation}%`}</span>
         </div>
       </div>
       <div>
