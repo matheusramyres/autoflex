@@ -1,30 +1,26 @@
-import { useState, type JSX } from 'react';
-import { Dashboard } from './pages/Dashboard';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { Toaster } from 'sonner';
 import './App.css';
-import { SideBar } from './pages/SideBar';
+import { Dashboard } from './pages/Dashboard';
 import { Products } from './pages/Products';
 import { RawMaterials } from './pages/RawMaterials';
+import { SideBar } from './pages/SideBar';
 
 function App() {
-  const [currentScreen, setCurrentScreen] = useState('dashboard');
-
-  const renderScreen = () => {
-    switch (currentScreen) {
-      case 'dashboard':
-        return <Dashboard />;
-      case 'products':
-        return <Products />;
-      case 'materials':
-        return <RawMaterials />;
-      default:
-        return <Dashboard />;
-    }
-  };
   return (
-    <div className="w-full min-h-screen flex ">
-      <SideBar currentScreen={currentScreen} onNavigate={setCurrentScreen} />
-      <main className="ml-64 mb-10 w-full px-6 pt-8">{renderScreen()}</main>
-    </div>
+    <BrowserRouter>
+      <div className="w-full min-h-screen flex ">
+        <Toaster position="top-right" />
+        <SideBar />
+        <main className="ml-64 mb-10 w-full px-6 pt-8">
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/products" element={<Products />} />
+            <Route path="/materials" element={<RawMaterials />} />
+          </Routes>
+        </main>
+      </div>
+    </BrowserRouter>
   );
 }
 

@@ -1,16 +1,12 @@
+import { NavLink } from 'react-router-dom';
 import { OptionDashboard } from '../components/OptionDashboard';
 
-interface SideBarProps {
-  currentScreen: string;
-  onNavigate: (screen: string) => void;
-}
-
-export const SideBar = ({ currentScreen, onNavigate }: SideBarProps) => {
+export const SideBar = () => {
   type variant = 'dashboard' | 'products' | 'materials';
   const menuItems = [
-    { id: 'dashboard', label: 'Dashboard' },
-    { id: 'products', label: 'Produtos' },
-    { id: 'materials', label: 'Materiais' },
+    { id: 'dashboard', label: 'Dashboard', to: '/' },
+    { id: 'products', label: 'Produtos', to: '/products' },
+    { id: 'materials', label: 'Materiais', to: '/materials' },
   ];
   return (
     <aside className="fixed max-w-3xs w-full min-h-screen bg-[#101828] flex flex-col items-center">
@@ -23,14 +19,19 @@ export const SideBar = ({ currentScreen, onNavigate }: SideBarProps) => {
       <nav className="flex flex-col items-center w-full">
         {menuItems.map((item) => {
           return (
-            <OptionDashboard
-              title={item.label}
-              variant={item.id as variant}
-              active={currentScreen === item.id}
-              onClick={() => {
-                onNavigate(item.id);
-              }}
-            />
+            <NavLink
+              key={item.id}
+              to={item.to}
+              className="w-full flex items-center justify-center"
+            >
+              {({ isActive }) => (
+                <OptionDashboard
+                  title={item.label}
+                  variant={item.id as variant}
+                  active={isActive}
+                />
+              )}
+            </NavLink>
           );
         })}
       </nav>
