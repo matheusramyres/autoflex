@@ -1,12 +1,12 @@
-# Autoflex - Practical Test
+# Autoflex
 
-This project was developed as part of the Autoflex technical assessment.
+Este projeto foi desenvolvido como parte do processo técnico da Autoflex.
 
-The system controls products and raw materials, allowing the calculation of which products can be manufactured based on available raw material stock, prioritizing higher-value products.
+O sistema realiza o controle de produtos e matérias-primas, permitindo calcular quais produtos podem ser fabricados com base no estoque disponível de matérias-primas, priorizando os produtos de maior valor.
 
 ---
 
-## 🧰 Technologies
+## 🧰 Technologias
 
 ### Backend
 
@@ -25,24 +25,24 @@ The system controls products and raw materials, allowing the calculation of whic
 
 ---
 
-## 🚀 How to Run the Project
+## 🚀 Como Executar o Projeto
 
 ### Backend
 
-#### Requirements
+#### Requisitos
 
 - Java 21+
 - Docker
 - Docker Compose
 
-#### Steps
+#### Passos
 
 ```bash
 docker compose up -d
-./mvnw quarkus:dev
+./mvnw quarkus:dev #ou no windows .\mvnw quarkus:dev
 ```
 
-API will be available at:
+A API estará disponível em:
 
 ```bash
 http://localhost:8080
@@ -57,25 +57,25 @@ http://localhost:8080/q/swagger-ui
 ### Frontend
 
 ```bash
-npm install
-npm run dev
+yarn install
+yarn run dev
 ```
 
-Application will be available at:
+A aplicação estará disponível em:
 
 ```bash
 http://localhost:5173
 ```
 
-## 📌 Main Features
+## 📌 Principais Funcionalidades
 
-- Product CRUD
-- Raw Material CRUD
-- Product x Raw Material association
-- Production suggestion based on available stock
-- Priority based on product value
+- CRUD de Produtos
+- CRUD de Matérias-Primas
+- Associação entre Produto e Matéria-Prima
+- Sugestão de produção baseada no estoque disponível
+- Priorização baseada no valor do produto
 
-## 📄 Notes
+## 📄 Observações
 
-- All code, database tables, and endpoints are written in English.
-- The project follows API-first architecture, separating backend and frontend.
+- Todo o código, tabelas do banco de dados e endpoints estão escritos em inglês.
+- O projeto segue uma arquitetura API-first, com separação entre backend e frontend.
