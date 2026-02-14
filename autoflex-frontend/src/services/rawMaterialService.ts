@@ -1,3 +1,5 @@
+import { toast } from 'sonner';
+import { messages, type StatusCode } from '../types/MessageResponses';
 import type { RawMaterialPayload } from '../types/RawMaterial';
 import { api } from './api';
 
@@ -23,6 +25,17 @@ export const rawMaterialService = {
   },
 
   delete: async (id: number) => {
-    await api.delete(`/raw-materials/${id}`);
+    api
+      .delete(`/raw-materials/${id}`)
+      .then((response) => {
+        const status = response.status as StatusCode;
+        const msg = messages[status];
+        toast.success(msg);
+      })
+      .catch((error) => {
+        const status = error.response.status as StatusCode;
+        const msg = messages[status];
+        toast.error(msg);
+      });
   },
 };

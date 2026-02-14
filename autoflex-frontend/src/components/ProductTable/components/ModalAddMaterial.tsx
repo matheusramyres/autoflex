@@ -38,9 +38,9 @@ export const ModalAddMaterial = ({
         >
           <div
             className={clsx(
-              'bg-[#1E2939]',
+              'bg-erp-hover',
               'rounded-lg py-10 px-11.25',
-              'border border-[#2D3849]',
+              'border border-erp-subtle',
               'max-w-102 w-full',
               'flex flex-col items-center justify-center',
             )}

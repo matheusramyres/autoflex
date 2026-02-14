@@ -1,5 +1,5 @@
-import { LayoutDashboard, Box, Layers } from 'lucide-react';
 import { clsx } from 'clsx';
+import { Box, Layers, LayoutDashboard } from 'lucide-react';
 
 interface ButtonProps extends React.DetailedHTMLProps<
   React.ButtonHTMLAttributes<HTMLButtonElement>,
@@ -23,7 +23,9 @@ export const OptionDashboard = ({
       {...rest}
       className={clsx(
         'default-button',
-        active ? 'bg-[#155DFC] hover:bg-none' : 'bg-none hover:bg-[#1c3460]',
+        active
+          ? 'bg-erp-brand hover:bg-none'
+          : 'bg-none hover:bg-erp-brand-hover',
         'flex text-white',
         'mb-3.5',
         'max-w-52.5 w-full',

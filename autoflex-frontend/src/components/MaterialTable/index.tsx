@@ -21,14 +21,24 @@ import {
 } from '../../app/rawMaterialSilce';
 import { SkeletonRow } from '../../skeleton/SkeletonRow/SkeletonRow';
 import type { RawMaterial } from '../../types/RawMaterial';
+import { MaterialCard } from '../MaterialCard';
 import { PaginationController } from '../PaginationController/PaginationController';
 
 type RawMaterialTableProps = {
   data: RawMaterial[];
   loading: boolean;
+  totalStock: number;
+  totalMaterials: number;
+  stockLow: number;
 };
 
-export const MaterialTable = ({ data, loading }: RawMaterialTableProps) => {
+export const MaterialTable = ({
+  data,
+  totalMaterials,
+  totalStock,
+  stockLow,
+  loading,
+}: RawMaterialTableProps) => {
   const dispatch = useDispatch<AppDispatch>();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [isAdding, setIsAdding] = useState(false);
@@ -106,10 +116,10 @@ export const MaterialTable = ({ data, loading }: RawMaterialTableProps) => {
 
   return (
     <>
-      <div className="flex items-center justify-between">
+      <div className="flex items-end md:items-center justify-between flex-col md:flex-row">
         <header className="w-full flex flex-col mb-6">
           <h1 className="text-white text-[28px] font-bold">Materiais</h1>
-          <p className="text-[#B0B0B0] text-sm font-normal">
+          <p className="text-erp-muted text-sm font-normal">
             Gerencie seu estoque de matérias-primas
           </p>
         </header>
@@ -126,7 +136,7 @@ export const MaterialTable = ({ data, loading }: RawMaterialTableProps) => {
         </button>
       </div>
       {isAdding && (
-        <div className="bg-gray-800 rounded-lg p-6 border border-blue-600">
+        <div className="bg-gray-800 rounded-lg p-6 border border-blue-600 mt-6 md:mt-0">
           <h3 className="text-lg font-semibold text-white mb-4">
             Novo Material
           </h3>
@@ -192,18 +202,17 @@ export const MaterialTable = ({ data, loading }: RawMaterialTableProps) => {
           </div>
         </div>
       )}
-      <div className="w-full mt-6 bg-[#1E2939] rounded-[10px]">
-        <div className="w-full h-2.5 bg-[#172030] rounded-t-[10px]"></div>
+      <div className="w-full mt-6 bg-erp-hover rounded-[10px] overflow-x-auto">
         <table className="w-full">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
+              <tr key={headerGroup.id} className="bg-erp-main]">
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
                     className={clsx(
-                      'bg-[#172030] p-4 cursor-pointer',
-                      'text-[#B0B0B0] text-sm text-left font-normal',
+                      'bg-erp-main p-4 cursor-pointer',
+                      'text-erp-muted text-sm text-left font-normal',
                       header.id === 'actions' ? 'flex justify-end' : '',
                     )}
                   >
@@ -232,7 +241,7 @@ export const MaterialTable = ({ data, loading }: RawMaterialTableProps) => {
                       <td
                         key={cell.id}
                         className={clsx(
-                          'border-t border-[#2D3849]',
+                          'border-t border-erp-subtle',
                           'p-4 text-sm font-semibold',
                         )}
                       >
@@ -330,6 +339,23 @@ export const MaterialTable = ({ data, loading }: RawMaterialTableProps) => {
         </table>
       </div>
       {!loading && <PaginationController table={table} />}
+      <div className="flex gap-4 mt-6 flex-col md:flex-row">
+        <MaterialCard
+          title={'Total de materiais'}
+          variant={'totalMaterials'}
+          value={totalMaterials}
+        />
+        <MaterialCard
+          title={'Items com estoque baixo'}
+          variant={'stockLow'}
+          value={stockLow}
+        />
+        <MaterialCard
+          title={'Valor total do estoque'}
+          variant={'totalStock'}
+          value={totalStock}
+        />
+      </div>
     </>
   );
 };

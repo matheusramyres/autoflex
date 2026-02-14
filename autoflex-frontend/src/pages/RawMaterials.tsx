@@ -6,9 +6,10 @@ import { MaterialTable } from '../components/MaterialTable';
 
 export const RawMaterials = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { items, loading } = useSelector(
-    (state: RootState) => state.rawMaterials,
-  );
+  const {
+    material: { items, stockLow, totalMaterials, totalStock },
+    loading,
+  } = useSelector((state: RootState) => state.rawMaterials);
 
   useEffect(() => {
     dispatch(fetchRawMaterials());
@@ -16,7 +17,13 @@ export const RawMaterials = () => {
   return (
     <>
       <section>
-        <MaterialTable data={items} loading={loading} />
+        <MaterialTable
+          data={items}
+          loading={loading}
+          totalStock={totalStock}
+          totalMaterials={totalMaterials}
+          stockLow={stockLow}
+        />
       </section>
     </>
   );

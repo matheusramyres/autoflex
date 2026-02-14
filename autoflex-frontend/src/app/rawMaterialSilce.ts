@@ -2,14 +2,26 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { rawMaterialService } from '../services/rawMaterialService';
 import type { RawMaterial } from '../types/RawMaterial';
 
-interface RawMaterialState {
+interface ItemsType {
+  totalStock: number;
+  totalMaterials: number;
+  stockLow: number;
   items: RawMaterial[];
+}
+
+interface RawMaterialState {
+  material: ItemsType;
   loading: boolean;
   error: string | null;
 }
 
 const initialState: RawMaterialState = {
-  items: [],
+  material: {
+    totalStock: 0,
+    totalMaterials: 0,
+    stockLow: 0,
+    items: [],
+  },
   loading: false,
   error: null,
 };
@@ -58,7 +70,7 @@ const rawMaterialSlice = createSlice({
         state.loading = true;
       })
       .addCase(fetchRawMaterials.fulfilled, (state, action) => {
-        state.items = action.payload;
+        state.material = action.payload;
         state.loading = false;
       })
       .addCase(fetchRawMaterials.rejected, (state, action) => {

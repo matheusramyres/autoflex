@@ -28,11 +28,11 @@ export const Dashboard = () => {
     <>
       <header className="w-full flex flex-col mb-6">
         <h1 className="text-white text-[28px] font-bold">Dashboard</h1>
-        <p className="text-[#B0B0B0] text-sm font-normal">
+        <p className="text-erp-muted text-sm font-normal">
           Visão geral das suas operações industriais
         </p>
       </header>
-      <section className="flex justify-between gap-6">
+      <section className="flex justify-between gap-6 flex-col md:flex-row">
         {loadingSummary ? (
           <>
             <CardDataSkeleton />

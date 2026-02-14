@@ -153,10 +153,16 @@ export const ProductTable = ({ data, loading }: ProductTableProps) => {
         addMaterialToProduct={handleAddMaterial}
         setOpenModal={setOpenModal}
       />
-      <div className="flex items-center justify-between">
+      <div
+        className={clsx(
+          'flex flex-col md:flex-row',
+          'items-end md:items-center',
+          'justify-between',
+        )}
+      >
         <header className="w-full flex flex-col mb-6">
           <h1 className="text-white text-[28px] font-bold">Produtos</h1>
-          <p className="text-[#B0B0B0] text-sm font-normal">
+          <p className="text-erp-muted text-sm font-normal">
             Gerencie seu catálogo de produtos e composições.
           </p>
         </header>
@@ -173,7 +179,7 @@ export const ProductTable = ({ data, loading }: ProductTableProps) => {
         </button>
       </div>
       {isAdding && (
-        <div className="bg-gray-800 rounded-lg p-6 border border-blue-600">
+        <div className="bg-gray-800 rounded-lg p-6 border border-blue-600 mt-6 md:mt-0">
           <h3 className="text-lg font-semibold text-white mb-4">
             Novo Produto
           </h3>
@@ -239,24 +245,23 @@ export const ProductTable = ({ data, loading }: ProductTableProps) => {
           </div>
         </div>
       )}
-      <div className="w-full mt-6 bg-[#1E2939] rounded-[10px]">
-        <div className="w-full h-2.5 bg-[#172030] rounded-t-[10px]"></div>
+      <div className="w-full mt-6 bg-erp-hover rounded-[10px] overflow-x-auto">
         <table className="w-full">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
+              <tr key={headerGroup.id} className="bg-erp-main">
                 <th
                   className={clsx(
-                    'bg-[#172030] p-4 cursor-pointer',
-                    'text-[#B0B0B0] text-sm text-left font-normal',
+                    'bg-erp-main p-4 cursor-pointer',
+                    'text-erp-muted text-sm text-left font-normal',
                   )}
                 ></th>
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
                     className={clsx(
-                      'bg-[#172030] p-4 cursor-pointer',
-                      'text-[#B0B0B0] text-sm text-left font-normal',
+                      'bg-erp-main p-4 cursor-pointer',
+                      'text-erp-muted text-sm text-left font-normal',
                       header.id === 'actions' ? 'flex justify-end' : '',
                     )}
                   >
@@ -285,7 +290,7 @@ export const ProductTable = ({ data, loading }: ProductTableProps) => {
               table.getRowModel().rows.map((row) => (
                 <>
                   <tr key={row.id}>
-                    <td className="p-2 border-t border-[#2D3849]">
+                    <td className="p-2 border-t border-erp-subtle">
                       <button
                         onClick={() => toggleExpand(row.original.id)}
                         className="text-gray-400 hover:text-white transition-colors"
@@ -301,7 +306,7 @@ export const ProductTable = ({ data, loading }: ProductTableProps) => {
                       <td
                         key={cell.id}
                         className={clsx(
-                          'border-t border-[#2D3849]',
+                          'border-t border-erp-subtle',
                           'p-4 text-sm font-semibold',
                         )}
                       >
@@ -333,7 +338,7 @@ export const ProductTable = ({ data, loading }: ProductTableProps) => {
                           <p
                             className={clsx(
                               cell.id.includes('rawMaterialQuantity') &&
-                                'flex justify-center items-center p-2 w-8 h-6.75 rounded-2xl text-[#3EA2FF] bg-[#1C3460]',
+                                'flex justify-center items-center p-2 w-8 h-6.75 rounded-2xl text-[#3EA2FF] bg-erp-brand-hover',
                             )}
                           >
                             {flexRender(
@@ -402,7 +407,7 @@ export const ProductTable = ({ data, loading }: ProductTableProps) => {
                   <tr>
                     <td colSpan={5}>
                       {expandedProduct === row.original.id && (
-                        <div className="space-y-4 px-11.25 pb-6 pt-4.5 bg-[#172030]">
+                        <div className="space-y-4 px-11.25 pb-6 pt-4.5 bg-erp-main">
                           <div className="flex items-center justify-between">
                             <h4 className="text-lg font-semibold text-white">
                               Materiais de Composição

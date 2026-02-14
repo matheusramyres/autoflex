@@ -8,7 +8,7 @@ import {
 import { clsx } from 'clsx';
 import { useState } from 'react';
 import { SkeletonRow } from '../../skeleton/SkeletonRow/SkeletonRow';
-import type { ProductionSuggestion } from '../../types/production';
+import type { ProductionSuggestion } from '../../types/ProductionSuggestion';
 import { columns } from './columns';
 
 type ProductionProps = {
@@ -29,12 +29,12 @@ export function ProductionSuggestionTable({ data, loading }: ProductionProps) {
   });
 
   return (
-    <div className="w-full mt-6 bg-[#1E2939] rounded-[10px]">
-      <header className="pl-5 pt-6.5 pb-6 border-b border-[#2D3849]">
+    <div className="w-full mt-6 bg-erp-hover rounded-[10px] overflow-x-auto">
+      <header className="pl-5 pt-6.5 pb-6 border-b border-erp-subtle">
         <p className="text-[20px] text-white font-bold">
           Sugestões de Produção
         </p>
-        <p className="text-sm text-[#B0B0B0] font-normal">
+        <p className="text-sm text-erp-muted font-normal">
           Recomendações de produção otimizadas com base nos materiais
           disponíveis.
         </p>
@@ -47,8 +47,8 @@ export function ProductionSuggestionTable({ data, loading }: ProductionProps) {
                 <th
                   key={header.id}
                   className={clsx(
-                    'bg-[#172030] p-2 cursor-pointer',
-                    'text-[#B0B0B0] text-sm text-left font-normal',
+                    'bg-erp-main p-2 cursor-pointer',
+                    'text-erp-muted text-sm text-left font-normal',
                   )}
                   onClick={header.column.getToggleSortingHandler()}
                 >
@@ -80,7 +80,7 @@ export function ProductionSuggestionTable({ data, loading }: ProductionProps) {
                   <td
                     key={cell.id}
                     className={clsx(
-                      'border-t border-[#2D3849]',
+                      'border-t border-erp-subtle',
                       'p-4 text-sm font-semibold',
                       cell.id.includes('totalValue') ? 'text-[#47A2F9]' : '',
                     )}
