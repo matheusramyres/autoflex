@@ -1,9 +1,10 @@
 package com.autoflex.resource;
-import java.util.List;
 
+import com.autoflex.dto.RawMaterialDTO;
 import com.autoflex.entity.RawMaterial;
+import com.autoflex.service.RawMaterialService;
 
-import jakarta.transaction.Transactional;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -12,48 +13,41 @@ import jakarta.ws.rs.core.Response;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class RawMaterialResource {
+	
+	@Inject
+	RawMaterialService rawMaterialService;
 
 	@GET
-	public List<RawMaterial> list (){
-		return RawMaterial.listAll();
+	public RawMaterialDTO list (){
+		return rawMaterialService.list();
 	}
 	
 	@GET
 	@Path("/{id}")
 	public RawMaterial findById (@PathParam("id") Long id) {
-		return RawMaterial.findById(id);
+		return rawMaterialService.findById(id);
 	}
 	
 	@POST
-	@Transactional
-	public RawMaterial create(RawMaterial material) {
-		material.persist();
-		return material;
+	public Response create(RawMaterial material) {
+		RawMaterial created = rawMaterialService.create(material);
+		return Response
+				.status(Response.Status.CREATED)
+				.entity(created)
+				.build();
 	}
 	
 	@PUT
 	@Path("/{id}")
-	@Transactional
 	public RawMaterial update (@PathParam("id") Long id, RawMaterial material) {
-		RawMaterial entity = RawMaterial.findById(id);
-		entity.name = material.name;
-		entity.stockQuantity = material.stockQuantity;
+		return rawMaterialService.update(id, material);
 		
-		return entity;
 	}
 	
 	@DELETE
 	@Path("/{id}")
-	@Transactional
 	public Response delete(@PathParam("id") Long id) {
-		try {
-			RawMaterial.deleteById(id);			
-		}catch(Exception ex) {
-			throw new WebApplicationException(
-		            "Unable to delete material",
-		            409
-		        );
-		}
+		rawMaterialService.delete(id);			
 		return Response.noContent().build();
 	}
 	
