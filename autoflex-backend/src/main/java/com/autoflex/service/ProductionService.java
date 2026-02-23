@@ -1,8 +1,5 @@
 package com.autoflex.service;
 
-
-import com.autoflex.dto.ProductMaterialDTO;
-import com.autoflex.dto.ProductWithMaterialsDTO;
 import com.autoflex.dto.ProductionSuggestionDTO;
 import com.autoflex.entity.Product;
 import com.autoflex.entity.ProductRawMaterial;
@@ -10,9 +7,6 @@ import com.autoflex.entity.RawMaterial;
 
 import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.transaction.Transactional;
-import jakarta.ws.rs.NotFoundException;
-import jakarta.ws.rs.WebApplicationException;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -44,7 +38,13 @@ public class ProductionService {
 			int maxQuantity = Integer.MAX_VALUE;
 			
 			for(ProductRawMaterial prm: materials) {
-				Integer availableStock = stockMap.get(prm.product.id);
+				Long rmId = prm.rawMaterial.id;
+				Integer availableStock = stockMap.get(rmId);
+				
+				if (availableStock == null || prm.requireQuantity == null || prm.requireQuantity == 0) {
+			        maxQuantity = 0;
+			        break;
+			    }
 				int possible = availableStock / prm.requireQuantity;
 				maxQuantity = Math.min(maxQuantity, possible);
 			}
@@ -72,61 +72,6 @@ public class ProductionService {
 
 	}
 
-	public List<ProductWithMaterialsDTO> listProductsWithMaterials() {
-
-        List<Product> products = Product.listAll();
-        List<ProductWithMaterialsDTO> result = new ArrayList<>();
-
-        for (Product product : products) {
-
-            List<ProductRawMaterial> relations =
-                ProductRawMaterial.list("product.id", product.id);
-
-            ProductWithMaterialsDTO dto = new ProductWithMaterialsDTO();
-            dto.id = product.id;
-            dto.name = product.name;
-            dto.price = product.price;
-
-            dto.rawMaterialQuantity = relations.stream()
-                .map(prm -> prm.requireQuantity)
-                .reduce(0, Integer::sum);
-
-            dto.materials = relations.stream().map(prm -> {
-                ProductMaterialDTO m = new ProductMaterialDTO();
-                m.productRawMaterialId = prm.id;
-                m.rawMaterialId = prm.rawMaterial.id;
-                m.name = prm.rawMaterial.name;
-                m.requiredQty = prm.requireQuantity;
-                return m;
-            }).toList();
-
-            result.add(dto);
-        }
-
-        return result;
-    } 
-
 	
-	@Transactional
-    public void deleteProduct(Long productId) {
-
-        Product product = Product.findById(productId);
-
-        if (product == null) {
-            throw new NotFoundException("Product not found");
-        }
-        
-        try {
-        	
-        	ProductRawMaterial.delete("product.id", productId);        	
-        	product.delete();
-			
-		} catch (Exception e) {
-			throw new WebApplicationException(
-		            "Unable to delete product",
-		            409
-		        );
-		}
-    }
 
 }
