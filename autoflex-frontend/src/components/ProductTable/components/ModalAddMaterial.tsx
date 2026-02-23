@@ -55,6 +55,7 @@ export const ModalAddMaterial = ({
                 </label>
                 <input
                   type="number"
+                  data-cy="materialId"
                   value={addForm.rawMaterialId}
                   onChange={(e) =>
                     setAddForm({
@@ -77,6 +78,7 @@ export const ModalAddMaterial = ({
                 </label>
                 <input
                   type="number"
+                  data-cy="quantity"
                   value={addForm.requiredQty}
                   onChange={(e) =>
                     setAddForm({
@@ -97,6 +99,7 @@ export const ModalAddMaterial = ({
             <div className="w-full flex justify-between">
               <button
                 onClick={handleAddMaterial}
+                data-cy="saveMaterial"
                 className={clsx(
                   'px-4 py-2',
                   'bg-blue-600 text-white',

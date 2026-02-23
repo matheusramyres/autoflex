@@ -376,6 +376,7 @@ export const ProductTable = ({ data, loading }: ProductTableProps) => {
                             ) : (
                               <>
                                 <button
+                                  data-cy="editMaterial"
                                   onClick={() => startEdit(row.original)}
                                   className={clsx(
                                     'p-2 text-blue-400 hover:bg-gray-700',
@@ -462,6 +463,7 @@ export const ProductTable = ({ data, loading }: ProductTableProps) => {
                                       <td className="p-3">
                                         <div className="flex items-center justify-end">
                                           <button
+                                            data-cy="deleteMaterial"
                                             onClick={() =>
                                               handleRemoveMaterial(
                                                 material.productRawMaterialId,
