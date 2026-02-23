@@ -5,7 +5,7 @@ import { api } from './api';
 
 export const productService = {
   getProductsWithMaterials: async (): Promise<Product[]> => {
-    const res = await api.get<Product[]>('/production/product-with-materials');
+    const res = await api.get<Product[]>('/products/with-materials');
     return res.data;
   },
 
@@ -38,7 +38,7 @@ export const productService = {
 
   removeMaterialFromProduct: async (productRawMaterialId: number) => {
     await api
-      .delete(`/product-raw-material/product/${productRawMaterialId}`)
+      .delete(`/product-raw-material/${productRawMaterialId}`)
       .then((response) => {
         const status = response.status as StatusCode;
         const msg = messages[status];

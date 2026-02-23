@@ -30,7 +30,7 @@ export const CardData = ({ value, variant, variation }: CardProps) => {
         <div
           className={clsx(
             'flex justify-center',
-            variation && variation > 0 ? 'text-erp-green]' : 'text-erp-red',
+            variation && variation > 0 ? 'text-erp-green' : 'text-erp-red',
           )}
         >
           {variation && variation > 0 ? <TrendingUp /> : <TrendingDown />}
